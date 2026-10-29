@@ -87,20 +87,10 @@ function Topography({ visitor, update, pointer }) {
  </div>;
 }
 function Observer({ phase }) {
- const [frame,setFrame]=useState(0);
- useEffect(()=>{
-   const began=performance.now();
-   const update=()=>{
-     const elapsed=performance.now()-began;
-     if(phase==='working')setFrame(Math.floor(elapsed/145)%11);
-     else if(phase==='turned'||phase==='tearing')setFrame(elapsed<1050?11+Math.min(7,Math.floor(elapsed/132)):19+Math.floor(elapsed/420)%4);
-     else if(phase==='staring')setFrame(19+Math.floor(elapsed/420)%4);
-     else setFrame(0);
-   };
-   update();const id=setInterval(update,65);return()=>clearInterval(id);
- },[phase]);
- return <div className="observer-sprite-scene" aria-hidden="true">
-   <div className="observer-sprite" style={{backgroundPosition:`${(frame%6)*20}% ${Math.floor(frame/6)*(100/3)}%`}} />
+ const turned = ['turned', 'tearing', 'staring'].includes(phase);
+ return <div className={'observer-sprite-scene observer-svg-scene'+(turned?' observer-has-turned':'')} aria-hidden="true">
+   <img className="observer-svg observer-svg-working" src={`${import.meta.env.BASE_URL}images/coder-working.svg`} alt="" draggable="false" />
+   <img className="observer-svg observer-svg-turned" src={`${import.meta.env.BASE_URL}images/coder-turned.svg`} alt="" draggable="false" />
  </div>;
 }
 function Dither({ pointer, onEncounter }) {
@@ -184,7 +174,7 @@ function Dither({ pointer, onEncounter }) {
    if(phaseRef.current==='working'&&firstSeenRef.current)turn();
  };
  const active=['working','turned','tearing','staring'].includes(phase);
- return <div className="world-content dither-world" ref={region} onPointerMove={move}>
+ return <div className="world-content dither-world" ref={region} onPointerMove={move} onPointerLeave={()=>{wasInside.current=false;setCursor({x:-999,y:-999})}}>
    <div className="dither-bits" aria-hidden="true">
      <DitherBits waveSpeed={0.045} waveFrequency={2.8} waveAmplitude={0.26}
        waveColor={[0.65,0.7,0.77]} backgroundColor={[0.018,0.022,0.035]}

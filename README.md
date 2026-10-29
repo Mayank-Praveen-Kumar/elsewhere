@@ -1,23 +1,18 @@
-# ELSEWHERE v0.4.1 — Official React Bits Faulty Terminal
+# ELSEWHERE v0.4.2 — User-provided hooded coder sprites
 
-Fixes the missing React Bits background in World 03. Uses the official React Bits Faulty Terminal WebGL component underneath the existing interactive transcript and input.
+This version uses the **two SVG sprites from your uploaded Figma exports**, without AI sprite generation:
 
-## Upgrade your working v0.4 installation
-Copy these files from the ZIP into the matching paths in your existing project:
-- `src/App.jsx`
-- `src/style.css`
-- `package.json`
-- `scripts/install-faulty-terminal.mjs`
+- `Hooded Coder Sprite(1).zip` → `public/images/coder-working.svg`
+- `Hooded Coder Sprite (1)(1).zip` → `public/images/coder-turned.svg`
 
-Then run:
-```powershell
-npm.cmd run setup:faulty-terminal
-npm.cmd run dev
-```
+Both retain their laptop light-pulsing CSS animations, embedded in each SVG. The second sprite fades in when the visitor returns or when the 60-second timer expires. The React Bits Dither and Faulty Terminal effects remain intact.
 
-**Do not delete or overwrite your already installed** `src/reactbits/Topography.jsx`, `Topography.css`, `Dither.jsx`, or `Dither.css`. The ZIP does not include downloaded official React Bits components; the setup script installs Faulty Terminal.
+## Update an existing working v0.4.1
 
-## Fresh install
+Copy `src/App.jsx`, `src/style.css`, and **both** SVG files in `public/images/` into your project. No npm install or React Bits setup needed.
+
+## Fresh installation
+
 ```powershell
 npm.cmd install
 npm.cmd run setup:topography
@@ -26,4 +21,6 @@ npm.cmd run setup:faulty-terminal
 npm.cmd run dev
 ```
 
-The interactive command responses, typewriter messages, and visitor memory are preserved. The new background is configured with muted phosphor green glyphs, mouse reaction, subtle flicker, scanlines and click glitch. Browser rendering not tested in this environment.
+The official React Bits component files are installed via setup scripts and are not bundled. The supplied assets are SVG vector sprites (not frame-by-frame raster sprite sheets); this version uses the two poses with a stepped crossfade, not a true interpolated head-turn animation.
+
+Refreshed with the two latest uploaded exports. Sprite paths also work when hosted in a subdirectory. Leaving the Dither page area resets cursor entry detection so returning to the figure triggers the second pose.
