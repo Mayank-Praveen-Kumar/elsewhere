@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import TopographyBits from './reactbits/Topography.jsx';
 import { ArrowUpRight, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 const KEY = 'elsewhere-visitor-v1';
@@ -13,7 +14,7 @@ function CanvasBackground({ mode, pointer }) {
   const resize=()=>{dpr=Math.min(devicePixelRatio||1,2);w=canvas.clientWidth;h=canvas.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)};
   resize();window.addEventListener('resize',resize);
   const draw=()=>{t+=0.012;ctx.clearRect(0,0,w,h);ctx.fillStyle='#05070b';ctx.fillRect(0,0,w,h);
-   if(mode==='topography') {const px=pointer.current.x/w||0.5,py=pointer.current.y/h||0.5;for(let i=0;i<24;i++){ctx.beginPath();const offset=i*22;for(let x=-20;x<=w+20;x+=8){const y=h*.54+Math.sin(x*.005+t*.36+i*.13)*56+Math.sin(x*.012-t*.18+i*.31)*23+(i-12)*24+Math.sin(x*.002+px*3)*24+(py-.5)*18; if(x===-20)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.strokeStyle=`rgba(84,128,255,${.07+Math.sin(i*.42+t)*.04})`;ctx.lineWidth=1.15;ctx.stroke();}}
+   if(mode==='unused-topography') {const px=pointer.current.x/w||0.5,py=pointer.current.y/h||0.5;for(let i=0;i<24;i++){ctx.beginPath();const offset=i*22;for(let x=-20;x<=w+20;x+=8){const y=h*.54+Math.sin(x*.005+t*.36+i*.13)*56+Math.sin(x*.012-t*.18+i*.31)*23+(i-12)*24+Math.sin(x*.002+px*3)*24+(py-.5)*18; if(x===-20)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.strokeStyle=`rgba(84,128,255,${.07+Math.sin(i*.42+t)*.04})`;ctx.lineWidth=1.15;ctx.stroke();}}
    if(mode==='dither'){const step=7;for(let y=0;y<h;y+=step)for(let x=0;x<w;x+=step){const wave=Math.sin(x*.016+t*.7+Math.sin(y*.012-t*.2)*2)*Math.cos(y*.015-t*.32);const v=(wave+1)/2;const r=1.2+v*2.5;ctx.fillStyle=`rgba(192,202,214,${.07+v*.22})`;ctx.fillRect(x,y,r,r)}}
    if(mode==='terminal'){for(let y=0;y<h;y+=4){ctx.fillStyle='rgba(82,220,145,.018)';ctx.fillRect(0,y,w,1)}for(let i=0;i<46;i++){const x=((i*137.2+t*9)% (w+50));const y=(i*79.7)%h;ctx.fillStyle=`rgba(91,240,159,${.045+.035*Math.sin(t+i)})`;ctx.fillRect(x,y,1,12)}}
    raf=requestAnimationFrame(draw)};raf=requestAnimationFrame(draw);return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',resize)};
@@ -21,10 +22,57 @@ function CanvasBackground({ mode, pointer }) {
 }
 const MESSAGES=[{id:'lost',x:17,y:27,text:'Are you lost?'},{id:'here',x:74,y:22,text:"You shouldn't be here."},{id:'where',x:49,y:44,text:'Do you know where you are?'},{id:'who',x:26,y:70,text:'Who are you?'},{id:'watch',x:81,y:69,text:"They're watching."},{id:'name',x:51,y:82,text:'Tell us your name before they get it out of you.'}];
 function Topography({ visitor, update, pointer }) {
- const [active,setActive]=useState(null),[input,setInput]=useState(''),[reply,setReply]=useState(false),[unlocked,setUnlocked]=useState(false);
- const onMove=e=>{pointer.current={x:e.clientX,y:e.clientY};if(unlocked||reply)return;const rect=e.currentTarget.getBoundingClientRect();const px=(e.clientX-rect.left)/rect.width*100,py=(e.clientY-rect.top)/rect.height*100;let closest=null,dist=999;for(const m of MESSAGES){const d=Math.hypot((px-m.x)*rect.width/100,(py-m.y)*rect.height/100);if(d<dist){dist=d;closest=m}}setActive(dist<125?closest?.id:null);if(dist<125&&closest&&!visitor.found.includes(closest.id))update(v=>({...v,found:[...v.found,closest.id]}));if(closest?.id==='name'&&dist<125)setUnlocked(true)};
- const submit=e=>{e.preventDefault();const name=input.trim().slice(0,32);if(!name)return;update(v=>({...v,name}));setReply(true);setUnlocked(false)};
- return <div className="world-content" onPointerMove={onMove}><CanvasBackground mode="topography" pointer={pointer}/><div className="world-heading"><span className="eyebrow">WORLD 01 / THE QUESTION</span><h1>TOPOGRAPHY<span className="dot">.</span></h1><p>Move slowly. Some things are hidden.</p></div><div className="topography-hit-layer">{MESSAGES.map(m=><div key={m.id} className={'secret '+(active===m.id&&!unlocked&&!reply?'visible':'')} style={{left:`${m.x}%`,top:`${m.y}%`}}>{m.text}</div>)}</div>{(unlocked||reply)&&<div className="identity-card">{reply?<><span className="eyebrow">IDENTITY REGISTERED</span><p className="identity-response">{visitor.name}.<br/><em>That's what you call yourself?</em></p><button className="text-button" onClick={()=>{setReply(false);setActive(null)}}>CONTINUE EXPLORING ↗</button></>:<><span className="eyebrow">A PRIVATE QUESTION</span><p>Tell us your name before <em>they</em> get it out of you.</p><form onSubmit={submit}><input autoFocus maxLength={32} value={input} onChange={e=>setInput(e.target.value)} placeholder="Your name" aria-label="Your name"/><button type="submit">CONFIRM ↗</button></form><button className="text-button" onClick={()=>setUnlocked(false)}>NOT YET</button></>}</div>}<div className="world-footer">{visitor.name?`IDENTITY: ${visitor.name.toUpperCase()}`:'IDENTITY: UNKNOWN'} <span>MOVE TO DISCOVER</span></div></div>;
+ const [cursor,setCursor]=useState({x:-1000,y:-1000,inside:false});
+ const [unlocked,setUnlocked]=useState(false);
+ const [input,setInput]=useState('');
+ const [reply,setReply]=useState(false);
+ const seenTerminal=visitor.visited.includes('terminal');
+ const recorded=useRef(new Set(visitor.found));
+ useEffect(()=>{recorded.current=new Set(visitor.found)},[visitor.found]);
+ const proximity=(m)=>{
+   if(!cursor.inside)return 0;
+   const d=Math.hypot(cursor.x-m.x,cursor.y-m.y);
+   const inner=4.5,outer=18;
+   const t=Math.max(0,Math.min(1,(outer-d)/(outer-inner)));
+   return t*t*(3-2*t);
+ };
+ const move=e=>{
+   pointer.current={x:e.clientX,y:e.clientY};
+   const r=e.currentTarget.getBoundingClientRect();
+   const x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;
+   setCursor({x,y,inside:true});
+   for(const m of MESSAGES){
+     if(Math.hypot(x-m.x,y-m.y)<10){
+       if(!recorded.current.has(m.id)){
+         recorded.current.add(m.id);
+         update(v=>v.found.includes(m.id)?v:{...v,found:[...v.found,m.id]});
+       }
+       if(m.id==='name'&&!visitor.name)setUnlocked(true);
+     }
+   }
+ };
+ const submit=e=>{
+   e.preventDefault();const name=input.trim().slice(0,32);if(!name)return;
+   update(v=>({...v,name}));setUnlocked(false);setReply(true);
+ };
+ const message=m=>{
+   if(!seenTerminal)return m.text;
+   if(m.id==='who')return visitor.name?`We know who you are, ${visitor.name}.`:'You still have not told us.';
+   if(m.id==='lost')return 'Why did you come back?';
+   if(m.id==='watch')return 'He remembers you.';
+   return m.text;
+ };
+ return <div className="world-content topography-world" onPointerMove={move} onPointerLeave={()=>setCursor(c=>({...c,inside:false}))}>
+   <div className="topography-bits" aria-hidden="true"><TopographyBits color="#240775" lineCount={22} lineWidth={1.2} elevation={1} speed={0.25} glow={0.55} mouseInteraction mouseStrength={0.25}/></div>
+   <div className="world-heading"><span className="eyebrow">WORLD 01 / THE QUESTION</span><h1>TOPOGRAPHY<span className="dot">.</span></h1><p>Move slowly. Some things are hidden.</p></div>
+   <div className="topography-hit-layer">{MESSAGES.map(m=>{
+      const strength=proximity(m);
+      const shown=!(m.id==='name'&&(unlocked||reply||visitor.name));
+      return <div key={m.id} className="secret" style={{left:`${m.x}%`,top:`${m.y}%`,opacity:shown?strength:0,filter:`blur(${(1-strength)*9}px)`,transform:`translate(-50%,-50%) translateY(${(1-strength)*8}px)`,textShadow:`0 0 ${12+strength*18}px rgba(115,71,215,${strength*.45})`}}>{message(m)}</div>
+   })}</div>
+   {(unlocked||reply)&&<div className="identity-card">{reply?<><span className="eyebrow">IDENTITY REGISTERED</span><p className="identity-response">{visitor.name}.<br/><em>That's what you call yourself?</em></p><button className="text-button" onClick={()=>setReply(false)}>CONTINUE EXPLORING ↗</button></>:<><span className="eyebrow">A PRIVATE QUESTION</span><p>Tell us your name before <em>they</em> get it out of you.</p><form onSubmit={submit}><input autoFocus maxLength={32} value={input} onChange={e=>setInput(e.target.value)} placeholder="Your name" aria-label="Your name"/><button type="submit">CONFIRM ↗</button></form><button className="text-button" onClick={()=>setUnlocked(false)}>NOT YET</button></>}</div>}
+   <div className="world-footer">{visitor.name?`IDENTITY: ${visitor.name.toUpperCase()}`:'IDENTITY: UNKNOWN'} <span>MOVE TO DISCOVER</span></div>
+ </div>;
 }
 function Observer({ turned=false, tearing=false }) {return <div className={'observer-scene '+(tearing?'tearing':'')}><div className="observer-halo"/><div className="monitor"><div className={'monitor-screen '+(turned?'flicker':'')} /></div><div className="desk"/><div className={'figure '+(turned?'turned':'')}><div className="hood"><div className="face">{turned&&<div className="eyes"><i/><i/></div>}</div></div><div className="torso"/><div className="arm"/></div></div>}
 function Dither({pointer,onEncounter}){

@@ -1,31 +1,19 @@
-# ELSEWHERE — Prototype 0.1
+# ELSEWHERE v0.2 — Purple Topography
 
-An original three-world interactive experience. Built with React, GSAP and Lenis. It uses lightweight custom canvas interpretations of the Topography, Dither and Faulty Terminal visual directions **as placeholders**. The official React Bits components are **not yet integrated**; they can be swapped in as the visual system is refined.
+World 01 now uses **the official React Bits Topography source** installed from the public React Bits registry. Color: `#240775`. Fixed secret locations, distance-weighted fading, persistent name, post-Terminal message changes. Worlds 02 and 03 remain v0.1 prototypes.
 
-## Start
+## Setup (PowerShell on Windows)
 
-1. Install Node.js 20+.
-2. Run `npm install` in this folder.
-3. Run `npm run dev` and open the local address shown.
-4. Run `npm run build` to generate production files.
+```powershell
+npm.cmd install
+npm.cmd run setup:topography
+npm.cmd run dev
+```
 
-## Implemented
+The **setup:topography** step is mandatory and downloads the official component source from `https://reactbits.dev/r/Topography-JS-CSS.json` into `src/reactbits/`. This source is not bundled in this archive. An internet connection is required for setup. The development server cannot compile until the source is installed.
 
-- Cinematic GSAP fade-to-black world transitions.
-- Three separate, animated world environments.
-- Topography: six cursor-discoverable messages, name input and ambiguous response.
-- Dither: hooded figure illustrated with CSS, first/second discovery states, 60-second timed reveal, flickering monitor, and blackout reset.
-- Faulty Terminal: type-on sequence that changes with the visitor's name and observer encounter.
-- Persistent progress stored locally in browser localStorage; reset available in WORLDS menu.
-- Lenis initialized globally, ready for future scroll-based scenes.
+If the React Bits registry changes, see https://reactbits.dev/backgrounds/topography for the latest installation command.
 
-## Next steps / known limitations
+Your browser localStorage progress from v0.1 is preserved when running on the same origin (`localhost:5173`).
 
-- Swap custom canvas backgrounds for **official React Bits** Topography, Dither, and Faulty Terminal source components, according to their current docs and dependencies. Current canvas versions are visual stand-ins, not the official effects.
-- Replace CSS-drawn hooded figure with commissioned layered artwork or a rigged animation; the tear effect is a prototype.
-- Improve Dither cursor reveal so it follows the pointer accurately in all layouts, and implement fully deterministic encounter triggers across pointer and touch.
-- Add accessible non-hover discovery controls for mobile and keyboard navigation.
-- Add sound design and an optional mute control only after audio exists.
-- Test build and browsers after installing dependencies (the generation environment has no access to npm registry).
-
-No account, backend, analytics, or external identity collection is included.
+**Notes:** The React Bits component itself responds to pointer interaction, but the overlay uses pointer events on the parent. Other worlds are still prototypes.
