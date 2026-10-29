@@ -1,4 +1,4 @@
-# ELSEWHERE v0.4.5 — Animated observer head turn
+# ELSEWHERE v0.4.6 — Animated observer head turn
 
 Dither uses your two uploaded hooded coder poses. On the first reveal the figure faces the laptop. Leave the figure and return (or click Look closer) to trigger the second reveal: the hood contours animate over 1.45 seconds, then one pale eye and the other appear. The torso, arms, and laptop remain fixed; laptop light continues pulsing. The completed pose holds before blackout. The existing 60-second encounter also uses the turn.
 
@@ -44,3 +44,7 @@ After Dither’s second reveal (or its timed encounter), the screen fades to bla
 ## v0.4.5 — CRT power button
 
 The small power switch on the monitor bezel attempts to close the browser tab. It supports mouse, touch, Enter and Space. Browsers restrict scripts from closing some manually opened tabs; if closure is blocked, the monitor powers off, its light goes dark and the screen shows the platform’s close-tab shortcut. No navigation or history workarounds are used.
+
+## v0.4.6 — Landing-page flash warning
+
+A static, visible flashing-lights warning appears above Enter. The button references the warning for screen readers.

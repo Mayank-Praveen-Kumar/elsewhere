@@ -191,3 +191,10 @@
 .crt-session-ended p{margin:0 0 12px;}
 .crt-session-ended small{font-size:12px;color:#66846c;}
 .crt-session-ended kbd{font:inherit;color:#a0c5a8;}
+
+/* Static warning stays visible before visitors enter the experience. */
+.flash-warning{max-width:450px;margin-top:30px;padding:12px 15px;border-left:2px solid #c5a26f;background:#c5a26f09;}
+.flash-warning strong{display:block;color:#dbbd92;font:10px/1.5 'DM Mono',monospace;letter-spacing:.14em;}
+.landing-center .flash-warning p{margin:5px 0 0;color:#bdc3ce;font-size:12px;line-height:1.6;letter-spacing:0;}
+.flash-warning+.enter{margin-top:20px;}
+@media(max-width:600px){.flash-warning{max-width:340px;}}
