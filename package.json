@@ -7,7 +7,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
-    "setup:topography": "node scripts/install-topography.mjs",\n    "setup:dither": "node scripts/install-dither.mjs"
+    "setup:topography": "node scripts/install-topography.mjs",
+    "setup:dither": "node scripts/install-dither.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
