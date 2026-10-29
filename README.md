@@ -1,26 +1,36 @@
-# ELSEWHERE v0.4.2 — User-provided hooded coder sprites
+# ELSEWHERE v0.4.3 — Animated observer head turn
 
-This version uses the **two SVG sprites from your uploaded Figma exports**, without AI sprite generation:
+Dither uses your two uploaded hooded coder poses. On the first reveal the figure faces the laptop. Leave the figure and return (or click Look closer) to trigger the second reveal: the hood contours animate over 1.45 seconds, then one pale eye and the other appear. The torso, arms, and laptop remain fixed; laptop light continues pulsing. The completed pose holds before blackout. The existing 60-second encounter also uses the turn.
 
-- `Hooded Coder Sprite(1).zip` → `public/images/coder-working.svg`
-- `Hooded Coder Sprite (1)(1).zip` → `public/images/coder-turned.svg`
+The head is animated as SVG geometry, not a whole-image crossfade. Reduced-motion preferences show the final pose immediately.
 
-Both retain their laptop light-pulsing CSS animations, embedded in each SVG. The second sprite fades in when the visitor returns or when the 60-second timer expires. The React Bits Dither and Faulty Terminal effects remain intact.
-
-## Update an existing working v0.4.1
-
-Copy `src/App.jsx`, `src/style.css`, and **both** SVG files in `public/images/` into your project. No npm install or React Bits setup needed.
-
-## Fresh installation
+## Run
 
 ```powershell
 npm.cmd install
-npm.cmd run setup:topography
-npm.cmd run setup:dither
-npm.cmd run setup:faulty-terminal
 npm.cmd run dev
 ```
 
-The official React Bits component files are installed via setup scripts and are not bundled. The supplied assets are SVG vector sprites (not frame-by-frame raster sprite sheets); this version uses the two poses with a stepped crossfade, not a true interpolated head-turn animation.
+The React Bits background source files are included. Optional setup scripts can refresh them from the official registry.
 
-Refreshed with the two latest uploaded exports. Sprite paths also work when hosted in a subdirectory. Leaving the Dither page area resets cursor entry detection so returning to the figure triggers the second pose.
+## Build
+
+```powershell
+npm.cmd run build
+```
+
+## Update an existing installation
+
+Replace `src/`, `public/images/`, `package.json`, and `vite.config.js` with these versions, then run `npm.cmd install`. Keep your own custom React Bits components if you have modified them.
+
+## World 03 — CRT terminal
+
+A dark 1990s CRT case surrounds bowed glass, a radial displacement filter, scanlines, phosphor glow and a recessed screen. The opening uses sparse green Courier text and deliberate pauses:
+
+(Name). We found you.
+
+You must remain weary of *him*.
+
+...
+
+The saved visitor name replaces (Name); UNKNOWN appears when no name was entered. Each message is separated by a blank line. Existing interactive terminal commands remain available afterward.

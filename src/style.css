@@ -96,8 +96,8 @@
 
 /* v0.3.2 — animated sprite replacing the full photograph and CSS figure */
 .observer-sprite-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:transparent;}
-.observer-sprite{width:min(74vw,820px);aspect-ratio:4/3;background-image:url('/images/observer-sprite.webp');background-size:600% 400%;background-repeat:no-repeat;image-rendering:auto;filter:grayscale(1) contrast(1.2) brightness(.85);box-shadow:0 0 85px 35px rgba(0,0,0,.65);}
-@media(max-width:700px){.observer-sprite{width:110vw;max-width:none;}}
+
+@media(max-width:700px){}
 
 /* World 03 — Faulty Terminal v0.4 */
 .terminal-world{background:#020603;isolation:isolate;}
@@ -134,3 +134,41 @@
 .observer-has-turned .observer-svg-turned{opacity:1;transform:translateY(0)}
 @media(max-width:700px){.observer-svg{width:min(104vw,560px);height:min(104vw,560px);max-height:80vh}}
 @media(prefers-reduced-motion:reduce){.observer-svg{transition:none}}
+
+/* One shared SVG: no full-body crossfade or vertical movement during the turn. */
+.observer-svg-animated{opacity:1;transform:none;transition:none;}
+.observer-svg-animated>svg{display:block;width:100%;height:100%;}
+
+/* World 03 — bowed CRT glass, recessed bezel and radial image displacement. */
+.terminal-world{background:radial-gradient(ellipse at 50% 50%,#102219 0%,#050a07 48%,#020403 83%);}
+.terminal-world>.faulty-bits-layer{opacity:.17;}
+.crt-monitor{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);width:min(900px,calc(100vw - 40px));z-index:3;padding:25px 27px 0;border:1px solid #52554d;border-radius:27px 27px 36px 36px;background:linear-gradient(135deg,#51534c 0%,#373b35 25%,#242923 75%,#1b201b);box-shadow:inset 2px 3px 2px #ffffff22,inset -3px -4px 4px #000b,0 35px 75px #000b;}
+.crt-filter-defs{position:absolute;pointer-events:none;}
+.crt-bezel{padding:19px 22px 24px;border-radius:48% / 5%;background:linear-gradient(145deg,#111711,#53564a);box-shadow:inset 5px 7px 14px #000c,inset -2px -3px 3px #ffffff12;}
+.crt-glass{position:relative;height:min(53vh,450px);min-height:280px;overflow:hidden;border-radius:50% / 6%;background:radial-gradient(ellipse at 50% 45%,#091e10,#020a05 75%);border:2px solid #000;box-shadow:inset 0 0 65px 18px #000b,0 0 2px #8eaa6f30;}
+.crt-screen-content{position:absolute;inset:12px 16px;display:flex;flex-direction:column;transform:perspective(1000px) rotateX(.7deg);transform-origin:center;}
+.crt-screen-content .terminal-log-v4{padding:24px 25px 12px;}
+.crt-screen-content .terminal-entry-v4{text-shadow:-.45px 0 #ff465b36,.45px 0 #63bfff44,0 0 7px #8aff9d55;}
+.crt-screen-content .terminal-entry-v4 em{font-family:inherit;font-style:italic;color:#b5fbc5;}
+.crt-screen-content .terminal-prompt-v4{padding:14px 25px;border-top:0;}
+.crt-glass-coating{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(0deg,#0002 0px,#0002 1px,transparent 1px,transparent 3px),radial-gradient(ellipse at 50% 48%,transparent 40%,#0009 100%),linear-gradient(124deg,#d6e9dc0c 3%,transparent 28%,transparent 75%,#ffffff03);box-shadow:inset 0 0 19px #88bc8e12;}
+.crt-chin{height:65px;display:flex;align-items:center;gap:15px;padding:0 13px;color:#b4b8a4;}
+.crt-maker{font:10px Arial,sans-serif;letter-spacing:.18em;text-shadow:0 1px #000;}
+.crt-maker small{display:block;font-size:7px;letter-spacing:.24em;margin-top:5px;color:#828b7b;}
+.crt-vents{margin-left:auto;width:85px;height:14px;background:repeating-linear-gradient(90deg,#101710 0 2px,transparent 2px 5px);opacity:.7;}
+.crt-power-led{width:5px;height:5px;border-radius:50%;background:#9ed969;box-shadow:0 0 8px #7dff4999;}
+.crt-power-switch{width:23px;height:16px;border:1px solid #121912;border-radius:3px;background:linear-gradient(#4b5145,#30372e);box-shadow:0 1px 2px #000;}
+.crt-stand{position:absolute;left:34%;right:34%;height:22px;bottom:-23px;border-radius:0 0 12px 12px;background:linear-gradient(90deg,#1c231b,#343b2e 50%,#1b221b);box-shadow:0 10px 20px #0008;z-index:-1;}
+.crt-interference{animation:crtInterference .14s steps(2) 1;}
+@keyframes crtInterference{33%{translate:2px 0;opacity:.85}66%{translate:-2px 0}100%{translate:0 0}}
+@media(max-width:600px){.crt-monitor{width:calc(100vw - 20px);padding:15px 12px 0;border-radius:18px 18px 24px 24px;}.crt-bezel{padding:12px 10px 16px}.crt-glass{height:min(56vh,480px);min-height:250px}.crt-screen-content{inset:10px 5px}.crt-screen-content .terminal-log-v4{padding:16px 13px 8px;font-size:12px}.crt-screen-content .terminal-prompt-v4{padding:12px 13px}.crt-chin{height:52px;padding:0 8px}.crt-vents{width:45px}.crt-maker{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.crt-interference{animation:none}}
+
+/* Sparse phosphor type, recalling the messages on Neo's CRT. */
+.crt-glass{background:radial-gradient(ellipse at 50% 45%,#031207,#010502 80%);}
+.crt-screen-content .terminal-log-v4{font-family:'Courier New',Courier,monospace;font-size:clamp(14px,1.4vw,18px);line-height:1.8;letter-spacing:.025em;}
+.crt-screen-content .terminal-entry-v4.output{color:#74ed93;}
+.crt-screen-content .terminal-entry-v4{text-shadow:0 0 3px #53ff8244,0 0 10px #53ff8222;}
+.crt-screen-content .terminal-prompt-v4{font-family:'Courier New',Courier,monospace;}
+.terminal-world>.faulty-bits-layer{opacity:.055;}
+@media(max-width:600px){.crt-screen-content .terminal-log-v4{font-size:13px;letter-spacing:0;}}

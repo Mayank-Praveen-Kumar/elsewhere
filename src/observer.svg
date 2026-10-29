@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="coder-sprite" viewBox="0 0 800 800" role="img" aria-labelledby="sprite-title sprite-description"><style>.coder-sprite{display:block;width:100%;height:100%;shape-rendering:crispEdges}
+.laptop-bloom {
+  opacity: 0.08;
+  animation: bloom-pulse 2.4s steps(6, end) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.laptop-aura {
+  opacity: 0.1;
+  animation: aura-pulse 2.4s steps(6, end) infinite;
+}
+
+.laptop-lid {
+  animation: lid-pulse 2.4s steps(6, end) infinite;
+}
+
+.laptop-panel {
+  animation: panel-pulse 2.4s steps(6, end) infinite;
+}
+
+@keyframes bloom-pulse {
+  0%,
+  100% {
+    opacity: 0.05;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes aura-pulse {
+  0%,
+  100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+@keyframes lid-pulse {
+  0%,
+  100% {
+    fill: #242424;
+  }
+  50% {
+    fill: #f4f4f4;
+  }
+}
+
+@keyframes panel-pulse {
+  0%,
+  100% {
+    fill: #111;
+  }
+  50% {
+    fill: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .laptop-bloom,
+  .laptop-aura,
+  .laptop-lid,
+  .laptop-panel {
+    animation: none;
+  }
+
+  .laptop-bloom {
+    opacity: 0.35;
+  }
+
+  .laptop-aura {
+    opacity: 0.4;
+  }
+}
+</style>
+        <title id="sprite-title">Hooded figure coding</title>
+        <desc id="sprite-description">
+          A monochrome pixel-art figure seen from behind, seated at a laptop
+          that pulses with black and white light.
+        </desc>
+
+        <rect width="800" height="800" fill="#050505" />
+
+        <defs>
+          <filter id="screen-bloom" x="-35%" y="-35%" width="170%" height="170%">
+            <feGaussianBlur stdDeviation="30" />
+          </filter>
+        </defs>
+
+        
+        <rect class="laptop-bloom" x="214" y="130" width="372" height="292" fill="#fff" filter="url(#screen-bloom)" />
+        <path class="laptop-aura" d="M226 130H574V146H598V386H574V410H226V386H202V146H226Z" fill="#fff" />
+
+        
+        <path class="laptop-lid" d="M250 158H550V174H566V370H550V386H250V370H234V174H250Z" fill="#e9e9e9" />
+        <path d="M266 184H534V200H550V354H534V370H266V354H250V200H266Z" fill="#101010" />
+        <rect class="laptop-panel" x="270" y="204" width="260" height="146" fill="#d8d8d8" />
+        <rect x="378" y="270" width="44" height="14" fill="#111" />
+        <rect x="388" y="260" width="24" height="34" fill="#111" />
+        <path d="M212 382H588V398H616V422H184V398H212Z" fill="#bdbdbd" />
+        <rect x="252" y="398" width="296" height="12" fill="#737373" />
+
+        
+        <path d="M352 258H448V274H480V290H504V322H520V386H504V418H472V442H328V418H296V386H280V322H296V290H320V274H352Z" fill="#111" data-head-part="0" />
+        <path d="M360 278H440V294H464V310H480V342H496V382H480V406H456V422H344V406H320V382H304V342H320V310H336V294H360Z" fill="#363636" data-head-part="1" />
+        <path d="M368 294H400V422H376V406H360V390H344V358H328V326H344V310H368Z" fill="#484848" data-head-part="2" />
+        <path d="M400 294H432V310H456V326H472V358H456V390H440V406H424V422H400Z" fill="#272727" data-head-part="3" />
+        <path d="M392 294H408V406H424V422H408V438H392V422H376V406H392Z" fill="#202020" data-head-part="4" />
+        <path d="M328 342H344V390H360V406H344V398H328V382H312V342Z" fill="#5b5b5b" data-head-part="5" />
+        <path d="M456 326H472V358H488V382H472V398H456Z" fill="#1b1b1b" data-rear-fold="" />
+
+        
+        <path d="M416 346H446V354H438V362H422V354H416Z" fill="#d9dad0" data-eye="0" opacity="0" />
+        <path d="M462 342H492V350H484V358H468V350H462Z" fill="#e5e6dc" data-eye="1" opacity="0" />
+
+        
+        <path d="M264 410H328V434H472V410H536V426H568V450H592V482H608V690H192V482H208V450H232V426H264Z" fill="#171717" />
+        <path d="M264 426H328V450H352V466H448V450H472V426H536V442H560V466H576V690H224V466H240V442H264Z" fill="#303030" />
+        <path d="M328 414H352V438H368V454H384V470H416V454H432V438H448V414H472V462H456V478H440V494H360V478H344V462H328Z" fill="#242424" />
+        <path d="M392 438H408V494H392Z" fill="#191919" />
+        <path d="M224 466H264V482H288V690H192V490H208V474H224Z" fill="#121212" />
+        <path d="M536 442H560V466H576V490H592V690H528V482H512V458H536Z" fill="#202020" />
+        <path d="M304 482H336V514H352V690H288V514H304Z" fill="#3c3c3c" />
+        <path d="M464 482H496V514H512V690H448V514H464Z" fill="#222" />
+        <rect x="376" y="482" width="48" height="208" fill="#292929" />
+        <rect x="392" y="498" width="16" height="192" fill="#343434" />
+
+        
+        <path d="M208 506H248V522H280V554H248V546H208Z" fill="#3d3d3d" />
+        <path d="M552 506H592V546H552V554H520V522H552Z" fill="#242424" />
+
+        <rect x="176" y="690" width="448" height="22" fill="#0d0d0d" />
+      </svg>

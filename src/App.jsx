@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import AnimatedObserver from './AnimatedObserver.jsx';
+import CRTMonitor from './CRTMonitor.jsx';
 import TopographyBits from './reactbits/Topography.jsx';
 import DitherBits from './reactbits/Dither.jsx';
 import FaultyTerminalBits from './reactbits/FaultyTerminal.jsx';
@@ -87,11 +89,7 @@ function Topography({ visitor, update, pointer }) {
  </div>;
 }
 function Observer({ phase }) {
- const turned = ['turned', 'tearing', 'staring'].includes(phase);
- return <div className={'observer-sprite-scene observer-svg-scene'+(turned?' observer-has-turned':'')} aria-hidden="true">
-   <img className="observer-svg observer-svg-working" src={`${import.meta.env.BASE_URL}images/coder-working.svg`} alt="" draggable="false" />
-   <img className="observer-svg observer-svg-turned" src={`${import.meta.env.BASE_URL}images/coder-turned.svg`} alt="" draggable="false" />
- </div>;
+ return <AnimatedObserver turned={['turned', 'tearing', 'staring'].includes(phase)}/>;
 }
 function Dither({ pointer, onEncounter }) {
  const [phase,setPhase]=useState('hidden');
@@ -125,9 +123,9 @@ function Dither({ pointer, onEncounter }) {
    if(phaseRef.current!=='working')return;
    setStage('turned');
    encounterRef.current();
-   setFlash(true);
-   schedule(()=>setFlash(false),480);
-   schedule(conclude,3100);
+   schedule(()=>setFlash(true),1650);
+   schedule(()=>setFlash(false),1870);
+   schedule(conclude,4300);
  };
  const tear=()=>{
    if(phaseRef.current!=='working')return;
@@ -204,23 +202,23 @@ function Terminal({visitor}){
  const sequenceRef=useRef(0);
  const identity=(visitor.name||'UNKNOWN').trim();
  const introduction=[
-   'CONNECTION ACCEPTED.',
-   'NO HANDSHAKE REQUESTED.',
-   visitor.name?`IDENTITY STRING FOUND: ${identity.toUpperCase()}`:'IDENTITY STRING: NOT FOUND.',
-   visitor.sawObserver?'HE WAS NOT SUPPOSED TO TURN AROUND.':'ONE OF THE WINDOWS IS STILL OPEN.',
-   'TYPE SOMETHING.'
+   `${visitor.name || 'UNKNOWN'}. We found you.`,
+   '',
+   'You must remain weary of *him*.',
+   '',
+   '...'
  ];
  const sleep=ms=>new Promise(resolve=>{const id=setTimeout(resolve,ms);queueRef.current.push(id)});
- const transmit=async(lines)=>{
+ const transmit=async(lines, opening=false)=>{
    const token=++sequenceRef.current;
    setBusy(true);
    for(const line of lines){
-     await sleep(320);
+     await sleep(opening ? (line ? 650 : 900) : 320);
      if(sequenceRef.current!==token)return;
      const id=`${token}-${line}-${Math.random()}`;
      setEntries(prev=>[...prev,{id,text:'',type:'output'}].slice(-80));
      for(let i=1;i<=line.length;i++){
-       await sleep(16+Math.random()*23);
+       await sleep(opening ? 55+Math.random()*35 : 16+Math.random()*23);
        if(sequenceRef.current!==token)return;
        setEntries(prev=>prev.map(entry=>entry.id===id?{...entry,text:line.slice(0,i)}:entry));
      }
@@ -230,7 +228,7 @@ function Terminal({visitor}){
    setBusy(false);
  };
  useEffect(()=>{
-   transmit(introduction);
+   transmit(introduction,true);
    return()=>{sequenceRef.current++;queueRef.current.forEach(clearTimeout);queueRef.current=[]};
  },[]);
  useEffect(()=>{scrollRef.current?.scrollTo({top:scrollRef.current.scrollHeight,behavior:'smooth'})},[entries]);
@@ -275,9 +273,9 @@ function Terminal({visitor}){
        persistence={0.5} scramble={0.35} mouseGlow={0.5} vignette={0.45}
        clickEffect="glitch" brightness={0.65} />
    </div>
-   <div className={'terminal-box terminal-box-v4'+(corrupt?' terminal-corrupt':'')}>
+   <CRTMonitor corrupt={corrupt}>
      <div className="terminal-log-v4" ref={scrollRef} role="log" aria-label="Terminal output" aria-live="off">
-       {entries.map(entry=><div className={'terminal-entry-v4 '+entry.type} key={entry.id}>{entry.text||'\u00a0'}</div>)}
+       {entries.map(entry=><div className={'terminal-entry-v4 '+entry.type} key={entry.id}>{entry.type==='output' ? entry.text.split(/(\*him\*)/g).map((part,i)=>part==='*him*'?<em key={i}>him</em>:part)||'\u00a0' : entry.text||'\u00a0'}</div>)}
        {busy&&<span className="terminal-caret-v4" aria-hidden="true">▌</span>}
      </div>
      <form className="terminal-prompt-v4" onSubmit={submit} autoComplete="off">
@@ -285,7 +283,7 @@ function Terminal({visitor}){
        <input aria-label="Terminal input" value={draft} onChange={e=>setDraft(e.target.value)} disabled={busy} maxLength={180} spellCheck={false} autoCapitalize="off" autoCorrect="off" placeholder={busy?'':'_'} />
        <button type="submit" disabled={busy||!draft.trim()} aria-label="Transmit">↵</button>
      </form>
-   </div>
+   </CRTMonitor>
  </div>;
 }
 
