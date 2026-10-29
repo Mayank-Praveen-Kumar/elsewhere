@@ -1,28 +1,19 @@
-# ELSEWHERE v0.3 — Dither encounter
+# ELSEWHERE v0.3.1 — photographic observer
 
-## Update existing v0.2.2 project
-Copy these from the archive into your existing project:
+The supplied photograph is included at `public/images/dither-observer.webp` and replaces the previous CSS hooded character in Dither. The original React Bits Dither shader remains unchanged. The photo appears only inside the existing cursor reveal, with a darkened hood and pale eyes overlaid during the second encounter. This overlay is a prototype, not a realistic rotation of the photographed person.
+
+## Update your existing working v0.3 project
+
+Copy the following into your existing project, keeping all your current React Bits files and dependencies:
+
 - `src/App.jsx`
 - `src/style.css`
-- `scripts/install-dither.mjs`
-- `package.json`
+- `public/images/dither-observer.webp` (create `public/images` if needed)
 
-Then, in the project folder, run:
-```
-npm.cmd run setup:dither
-npm.cmd run dev
-```
-Keep your already installed `src/reactbits/Topography.jsx` and `Topography.css`. Do not replace your existing `src/reactbits` directory with the empty directory in the ZIP.
+Refresh the page. No npm reinstall or setup script is needed.
 
-## Fresh install
-```
-npm.cmd install
-npm.cmd run setup:topography
-npm.cmd run setup:dither
-npm.cmd run dev
-```
+## Fresh installation
 
-## Dither interaction
-Move the cursor into the central figure area: the working observer appears under a soft cursor mask. Leave the area and return within 60 seconds to see him turn toward you, with eyes visible and a brief screen flash. Otherwise, after 60 seconds in the world, the dither curtain opens, he turns and stares, and the screen blacks out. The scene resets automatically after blackout. Terminal remembers that the observer saw you.
+`npm.cmd install`, then `npm.cmd run setup:topography`, `npm.cmd run setup:dither`, and `npm.cmd run dev`.
 
-This is an early interactive prototype. The hooded figure is CSS-drawn, not a finalized illustration or 3D model. The 60-second countdown pauses when the browser tab is hidden, but currently resets when you navigate away from Dither and return; persistent pause/resume across worlds is not implemented yet.
+This package uses the same source-download setup for React Bits as the previous version. The installed React Bits components are not included in the archive.

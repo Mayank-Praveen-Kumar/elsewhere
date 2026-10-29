@@ -85,7 +85,14 @@ function Topography({ visitor, update, pointer }) {
    </div>}
  </div>;
 }
-function Observer({ turned=false, tearing=false }) {return <div className={'observer-scene '+(tearing?'tearing':'')}><div className="observer-halo"/><div className="monitor"><div className={'monitor-screen '+(turned?'flicker':'')} /></div><div className="desk"/><div className={'figure '+(turned?'turned':'')}><div className="hood"><div className="face">{turned&&<div className="eyes"><i/><i/></div>}</div></div><div className="torso"/><div className="arm"/></div></div>}
+function Observer({ turned=false, tearing=false }) {
+ return <div className={'observer-photograph'+(turned?' observer-alert':'')+(tearing?' observer-tearing':'')}>
+   <img src="/images/dither-observer.webp" alt="" draggable="false" />
+   {turned&&<div className="observer-face-shift" aria-hidden="true">
+     <span className="observer-eye left"/><span className="observer-eye right"/>
+   </div>}
+ </div>;
+}
 function Dither({ pointer, onEncounter }) {
  const [phase,setPhase]=useState('hidden');
  const [cursor,setCursor]=useState({x:-999,y:-999});
