@@ -98,3 +98,23 @@
 .observer-sprite-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:transparent;}
 .observer-sprite{width:min(74vw,820px);aspect-ratio:4/3;background-image:url('/images/observer-sprite.webp');background-size:600% 400%;background-repeat:no-repeat;image-rendering:auto;filter:grayscale(1) contrast(1.2) brightness(.85);box-shadow:0 0 85px 35px rgba(0,0,0,.65);}
 @media(max-width:700px){.observer-sprite{width:110vw;max-width:none;}}
+
+/* World 03 — Faulty Terminal v0.4 */
+.terminal-world{background:#020603;isolation:isolate;}
+.terminal-world::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:repeating-linear-gradient(0deg,transparent 0px,rgba(0,0,0,.16) 2px,transparent 4px);opacity:.45;}
+.terminal-box-v4{position:absolute;top:52%;left:50%;transform:translate(-50%,-50%);width:min(850px,calc(100vw - 44px));height:min(66vh,540px);min-height:320px;display:flex;flex-direction:column;background:rgba(1,8,4,.84);border:1px solid rgba(108,241,148,.22);box-shadow:0 0 100px rgba(26,130,68,.08),inset 0 0 60px rgba(26,130,68,.025);z-index:3;overflow:hidden;}
+.terminal-log-v4{flex:1;overflow:auto;padding:30px 32px 18px;font:clamp(12px,1.3vw,15px)/1.75 'DM Mono',monospace;letter-spacing:.04em;scrollbar-color:#2b6243 transparent;scrollbar-width:thin;}
+.terminal-entry-v4{white-space:pre-wrap;overflow-wrap:anywhere;min-height:1.75em;text-shadow:0 0 9px rgba(80,239,133,.18);}
+.terminal-entry-v4.input{color:#d1f7d9;margin-top:15px;}
+.terminal-entry-v4.output{color:#80d99e;}
+.terminal-caret-v4{animation:terminalCaret .8s steps(1) infinite;}
+@keyframes terminalCaret{50%{opacity:0}}
+.terminal-prompt-v4{display:flex;align-items:center;gap:12px;border-top:1px solid rgba(108,241,148,.19);padding:16px 30px;font:14px 'DM Mono',monospace;color:#a0eeb5;}
+.terminal-prompt-v4 input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#d1f7d9;font:inherit;caret-color:#9befae;letter-spacing:.06em;}
+.terminal-prompt-v4 input::placeholder{color:#426e4f;}
+.terminal-prompt-v4 button{background:transparent;border:0;color:#80d99e;cursor:pointer;font:24px 'DM Mono',monospace;padding:0 6px;}
+.terminal-prompt-v4 button:disabled{opacity:.2;cursor:default;}
+.terminal-corrupt{animation:terminalDistort .14s steps(2) 1;}
+@keyframes terminalDistort{0%{filter:none;transform:translate(-50%,-50%)}33%{filter:hue-rotate(55deg);transform:translate(calc(-50% + 3px),-50%)}66%{filter:contrast(1.8);transform:translate(calc(-50% - 2px),-50%)}100%{filter:none;transform:translate(-50%,-50%)}}
+@media(max-width:600px){.terminal-box-v4{height:min(67vh,550px)}.terminal-log-v4{padding:22px 17px 12px}.terminal-prompt-v4{padding:14px 17px}}
+@media(prefers-reduced-motion:reduce){.terminal-corrupt{animation:none}.terminal-caret-v4{animation:none}}

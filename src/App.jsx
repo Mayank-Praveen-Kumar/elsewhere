@@ -204,9 +204,93 @@ function Dither({ pointer, onEncounter }) {
 }
 
 function Terminal({visitor}){
- const lines=visitor.name?[`> CONNECTION ESTABLISHED`,`> SEARCHING FOR IDENTITY...`,`> MATCH FOUND.`,`> ${visitor.name.toUpperCase()}.`,`> THAT'S WHAT YOU TOLD THEM.`,...(visitor.sawObserver?['> YOU SAW HIM.','> DIDN’T YOU?']:['> THERE IS STILL SOMETHING YOU HAVEN’T SEEN.']),'> BUT IS THAT WHO YOU ARE?']:['> CONNECTION ESTABLISHED','> IDENTITY UNKNOWN.','> INTERESTING.','> YOU HAVE MANAGED TO REMAIN ANONYMOUS.','> FOR NOW.',...(visitor.sawObserver?['> HE SAW YOU.']:[])];
- const [visible,setVisible]=useState(0);useEffect(()=>{setVisible(0);const id=setInterval(()=>setVisible(v=>Math.min(lines.length,v+1)),1100);return()=>clearInterval(id)},[visitor.name,visitor.sawObserver]);return <div className="world-content terminal-world"><CanvasBackground mode="terminal" pointer={{current:{x:0,y:0}}}/><div className="terminal-box"><div className="terminal-lines" aria-live="polite">{lines.slice(0,visible).map((line,i)=><div key={i}>{line}</div>)}<span className="cursor-block">▌</span></div></div></div>
+ const [entries,setEntries]=useState([]);
+ const [draft,setDraft]=useState('');
+ const [busy,setBusy]=useState(true);
+ const [corrupt,setCorrupt]=useState(false);
+ const scrollRef=useRef(null);
+ const queueRef=useRef([]);
+ const sequenceRef=useRef(0);
+ const identity=(visitor.name||'UNKNOWN').trim();
+ const introduction=[
+   'CONNECTION ACCEPTED.',
+   'NO HANDSHAKE REQUESTED.',
+   visitor.name?`IDENTITY STRING FOUND: ${identity.toUpperCase()}`:'IDENTITY STRING: NOT FOUND.',
+   visitor.sawObserver?'HE WAS NOT SUPPOSED TO TURN AROUND.':'ONE OF THE WINDOWS IS STILL OPEN.',
+   'TYPE SOMETHING.'
+ ];
+ const sleep=ms=>new Promise(resolve=>{const id=setTimeout(resolve,ms);queueRef.current.push(id)});
+ const transmit=async(lines)=>{
+   const token=++sequenceRef.current;
+   setBusy(true);
+   for(const line of lines){
+     await sleep(320);
+     if(sequenceRef.current!==token)return;
+     const id=`${token}-${line}-${Math.random()}`;
+     setEntries(prev=>[...prev,{id,text:'',type:'output'}].slice(-80));
+     for(let i=1;i<=line.length;i++){
+       await sleep(16+Math.random()*23);
+       if(sequenceRef.current!==token)return;
+       setEntries(prev=>prev.map(entry=>entry.id===id?{...entry,text:line.slice(0,i)}:entry));
+     }
+     await sleep(170);
+     if(sequenceRef.current!==token)return;
+   }
+   setBusy(false);
+ };
+ useEffect(()=>{
+   transmit(introduction);
+   return()=>{sequenceRef.current++;queueRef.current.forEach(clearTimeout);queueRef.current=[]};
+ },[]);
+ useEffect(()=>{scrollRef.current?.scrollTo({top:scrollRef.current.scrollHeight,behavior:'smooth'})},[entries]);
+ useEffect(()=>{
+   const id=setInterval(()=>{setCorrupt(true);setTimeout(()=>setCorrupt(false),140)},6500);
+   return()=>clearInterval(id);
+ },[]);
+ const answer=value=>{
+   const text=value.toLowerCase().trim();
+   if(!text)return ['YOU HAVE TO SAY SOMETHING.'];
+   if(/^(help|commands|\?)$/.test(text))return ['THERE IS NO HELP HERE.','TRY: WHO / WHERE / HIM / NAME / EXIT'];
+   if(/^(who|who are you|who are you\?)$/.test(text))return ['I AM THE PART THAT WAS LEFT RUNNING.','THE REST WAS SHUT DOWN.'];
+   if(/^(where|where am i|where am i\?)$/.test(text))return ['YOU ARE WHERE YOU LEFT YOURSELF.','THE COORDINATES ARE NOT FOR YOU.'];
+   if(/^(him|observer|man|figure|dither)$/.test(text))return visitor.sawObserver?['YOU FOUND HIM.','THAT MEANS HE FOUND YOU TOO.']:['HE IS STILL WORKING.','DO NOT INTERRUPT HIM.'];
+   if(/^(name|identity|me|my name)$/.test(text))return visitor.name?[`YOU SAID YOUR NAME WAS ${identity.toUpperCase()}.`,'WE HAVE NOT VERIFIED THAT.']:['YOU DID NOT GIVE US A NAME.','SOMEONE ELSE MIGHT.'];
+   if(/^(exit|quit|leave|escape)$/.test(text))return ['THERE IS NO EXIT COMMAND.','CLOSE THE WINDOW IF YOU MUST.','WE WILL REMEMBER THE WINDOW.'];
+   if(/^(yes|no)$/.test(text))return ['THAT WAS NOT THE QUESTION.'];
+   if(/^(hello|hi|hey)$/.test(text))return ['WE KNOW YOU ARE THERE.'];
+   if(/^(clear|cls)$/.test(text)){setEntries([]);return ['THE RECORD WAS CLEARED.','THE MEMORY WAS NOT.'];}
+   if(/^(look|watch|see)$/.test(text))return visitor.sawObserver?['YOU WERE SEEN.']:['LOOK AGAIN.'];
+   const choices=[
+     'THAT DOES NOT MATCH THE RECORD.',
+     'SOMEONE ELSE USED THOSE WORDS.',
+     'INPUT RECEIVED. INTENTION UNCLEAR.',
+     'YOU ARE ASKING THE WRONG MACHINE.',
+     'THIS CONVERSATION HAS HAPPENED BEFORE.'
+   ];
+   return [choices[(text.length+entries.length)%choices.length]];
+ };
+ const submit=e=>{
+   e.preventDefault();if(busy||!draft.trim())return;
+   const value=draft.trim().slice(0,180);
+   setDraft('');setEntries(prev=>[...prev,{id:`user-${Date.now()}`,text:`> ${value}`,type:'input'}]);
+   transmit(answer(value));
+ };
+ return <div className="world-content terminal-world">
+   <CanvasBackground mode="terminal" pointer={{current:{x:0,y:0}}}/>
+   <div className={'terminal-box terminal-box-v4'+(corrupt?' terminal-corrupt':'')}>
+     <div className="terminal-log-v4" ref={scrollRef} role="log" aria-label="Terminal output" aria-live="off">
+       {entries.map(entry=><div className={'terminal-entry-v4 '+entry.type} key={entry.id}>{entry.text||'\u00a0'}</div>)}
+       {busy&&<span className="terminal-caret-v4" aria-hidden="true">▌</span>}
+     </div>
+     <form className="terminal-prompt-v4" onSubmit={submit} autoComplete="off">
+       <span aria-hidden="true">&gt;</span>
+       <input aria-label="Terminal input" value={draft} onChange={e=>setDraft(e.target.value)} disabled={busy} maxLength={180} spellCheck={false} autoCapitalize="off" autoCorrect="off" placeholder={busy?'':'_'} />
+       <button type="submit" disabled={busy||!draft.trim()} aria-label="Transmit">↵</button>
+     </form>
+   </div>
+ </div>;
 }
+
 export default function App(){const [visitor,setVisitor]=useState(load),[world,setWorld]=useState('landing'),[transition,setTransition]=useState(false),[menu,setMenu]=useState(false),[muted,setMuted]=useState(true);const pointer=useRef({x:0,y:0}),veil=useRef(null),busy=useRef(false);
  useEffect(()=>localStorage.setItem(KEY,JSON.stringify(visitor)),[visitor]);
  const go=useCallback(next=>{if(busy.current||next===world)return;busy.current=true;setMenu(false);setTransition(true);gsap.to(veil.current,{opacity:1,duration:.48,ease:'power2.inOut',onComplete:()=>{setWorld(next);setVisitor(v=>next==='landing'||v.visited.includes(next)?v:{...v,visited:[...v.visited,next]});gsap.to(veil.current,{opacity:0,duration:.7,delay:.15,ease:'power2.inOut',onComplete:()=>{busy.current=false;setTransition(false)}})}})},[world]);
