@@ -4,7 +4,7 @@ import AnimatedObserver from './AnimatedObserver.jsx';
 import CRTMonitor from './CRTMonitor.jsx';
 import TopographyBits from './reactbits/Topography.jsx';
 import DitherBits from './reactbits/Dither.jsx';
-import FaultyTerminalBits from './reactbits/FaultyTerminal.jsx';
+import BinaryRain from './BinaryRain.jsx';
 import { ArrowUpRight, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 const KEY = 'elsewhere-visitor-v1';
@@ -91,7 +91,7 @@ function Topography({ visitor, update, pointer }) {
 function Observer({ phase }) {
  return <AnimatedObserver turned={['turned', 'tearing', 'staring'].includes(phase)}/>;
 }
-function Dither({ pointer, onEncounter }) {
+function Dither({ pointer, onEncounter, onFinish }) {
  const [phase,setPhase]=useState('hidden');
  const [cursor,setCursor]=useState({x:-999,y:-999});
  const [firstSeen,setFirstSeen]=useState(false);
@@ -104,6 +104,8 @@ function Dither({ pointer, onEncounter }) {
  const timers=useRef([]);
  const region=useRef(null);
  const wasInside=useRef(false);
+ const finishRef=useRef(onFinish);
+ finishRef.current=onFinish;
  const encounterRef=useRef(onEncounter);
  encounterRef.current=onEncounter;
  const setStage=next=>{phaseRef.current=next;setPhase(next)};
@@ -117,7 +119,7 @@ function Dither({ pointer, onEncounter }) {
  const conclude=()=>{
    encounterRef.current();
    setStage('blackout');
-   schedule(reset,1900);
+   schedule(()=>finishRef.current(),1350);
  };
  const turn=()=>{
    if(phaseRef.current!=='working')return;
@@ -265,14 +267,7 @@ function Terminal({visitor}){
    transmit(answer(value));
  };
  return <div className="world-content terminal-world">
-   <div className="faulty-bits-layer" aria-hidden="true">
-     <FaultyTerminalBits tint="#58e58b" scale={1.2} gridMul={[2,1]} digitSize={1.25}
-       timeScale={0.25} scanlineIntensity={0.28} glitchAmount={0.55} flickerAmount={0.35}
-       noiseAmp={0.32} chromaticAberration={0.0} curvature={0.12}
-       mouseReact mouseStrength={0.22} glyphs="characters" glow={0.55}
-       persistence={0.5} scramble={0.35} mouseGlow={0.5} vignette={0.45}
-       clickEffect="glitch" brightness={0.65} />
-   </div>
+   <BinaryRain/>
    <CRTMonitor corrupt={corrupt}>
      <div className="terminal-log-v4" ref={scrollRef} role="log" aria-label="Terminal output" aria-live="off">
        {entries.map(entry=><div className={'terminal-entry-v4 '+entry.type} key={entry.id}>{entry.type==='output' ? entry.text.split(/(\*him\*)/g).map((part,i)=>part==='*him*'?<em key={i}>him</em>:part)||'\u00a0' : entry.text||'\u00a0'}</div>)}
@@ -289,7 +284,7 @@ function Terminal({visitor}){
 
 export default function App(){const [visitor,setVisitor]=useState(load),[world,setWorld]=useState('landing'),[transition,setTransition]=useState(false),[menu,setMenu]=useState(false),[muted,setMuted]=useState(true);const pointer=useRef({x:0,y:0}),veil=useRef(null),busy=useRef(false);
  useEffect(()=>localStorage.setItem(KEY,JSON.stringify(visitor)),[visitor]);
- const go=useCallback(next=>{if(busy.current||next===world)return;busy.current=true;setMenu(false);setTransition(true);gsap.to(veil.current,{opacity:1,duration:.48,ease:'power2.inOut',onComplete:()=>{setWorld(next);setVisitor(v=>next==='landing'||v.visited.includes(next)?v:{...v,visited:[...v.visited,next]});gsap.to(veil.current,{opacity:0,duration:.7,delay:.15,ease:'power2.inOut',onComplete:()=>{busy.current=false;setTransition(false)}})}})},[world]);
+ const go=useCallback((next,fromBlack=false)=>{if(fromBlack){gsap.killTweensOf(veil.current);veil.current.style.opacity='0';busy.current=false;setTransition(false);setMenu(false);setWorld(next);setVisitor(v=>v.visited.includes(next)?v:{...v,visited:[...v.visited,next]});return;}if(busy.current||next===world)return;busy.current=true;setMenu(false);setTransition(true);gsap.to(veil.current,{opacity:1,duration:.48,ease:'power2.inOut',onComplete:()=>{setWorld(next);setVisitor(v=>next==='landing'||v.visited.includes(next)?v:{...v,visited:[...v.visited,next]});gsap.to(veil.current,{opacity:0,duration:.7,delay:.15,ease:'power2.inOut',onComplete:()=>{busy.current=false;setTransition(false)}})}})},[world]);
  const onEncounter=useCallback(()=>setVisitor(v=>v.sawObserver?v:{...v,sawObserver:true}),[]);
  const reset=()=>{if(!window.confirm('Forget your name and all discoveries on this browser?'))return;localStorage.removeItem(KEY);setVisitor({...initial});go('landing')};
- return <div className="app"><header className="header"><button className="brand" onClick={()=>go('landing')}>ELSEWHERE<span>®</span></button><div className="header-right"><button className="menu-button" onClick={()=>setMenu(v=>!v)} aria-expanded={menu}>{menu?'CLOSE':'WORLDS'} <span>{menu?'−':'+'}</span></button></div></header>{world==='landing'?<main className="landing"><div className="landing-orbit orbit-one"/><div className="landing-orbit orbit-two"/><div className="landing-center"><h1>THERE IS<br/>MORE <em>HERE</em><br/>THAN YOU SEE<span className="dot">.</span></h1><button className="enter" onClick={()=>go('topography')}>ENTER <ArrowUpRight size={17}/></button></div></main>:<main className="stage">{world==='topography'&&<Topography visitor={visitor} update={setVisitor} pointer={pointer}/ >}{world==='dither'&&<Dither pointer={pointer} onEncounter={onEncounter}/ >}{world==='terminal'&&<Terminal visitor={visitor}/>}</main>}<nav className="world-nav" aria-label="World navigation">{WORLDS.map(([id,label],i)=><button key={id} onClick={()=>go(id)} className={world===id?'selected':''}><span>0{i+1}</span>{label}<ArrowUpRight size={13}/></button>)}</nav>{menu&&<div className="menu-panel">{WORLDS.map(([id,label,desc],i)=><button onClick={()=>go(id)} key={id}><small>0{i+1}</small><span>{label}</span><ArrowUpRight/></button>)}<button className="reset-progress" onClick={reset}><RotateCcw size={15}/> FORGET EVERYTHING</button></div>}<div className="transition-veil" ref={veil} aria-hidden="true"/><div className="screen-grain" aria-hidden="true"/></div>}
+ return <div className="app"><header className="header"><button className="brand" onClick={()=>go('landing')}>ELSEWHERE<span>®</span></button><div className="header-right"><button className="menu-button" onClick={()=>setMenu(v=>!v)} aria-expanded={menu}>{menu?'CLOSE':'WORLDS'} <span>{menu?'−':'+'}</span></button></div></header>{world==='landing'?<main className="landing"><div className="landing-orbit orbit-one"/><div className="landing-orbit orbit-two"/><div className="landing-center"><h1>THERE IS<br/>MORE <em>HERE</em><br/>THAN YOU SEE<span className="dot">.</span></h1><button className="enter" onClick={()=>go('topography')}>ENTER <ArrowUpRight size={17}/></button></div></main>:<main className="stage">{world==='topography'&&<Topography visitor={visitor} update={setVisitor} pointer={pointer}/ >}{world==='dither'&&<Dither pointer={pointer} onEncounter={onEncounter} onFinish={()=>go('terminal',true)}/ >}{world==='terminal'&&<Terminal visitor={visitor}/>}</main>}<nav className="world-nav" aria-label="World navigation">{WORLDS.map(([id,label],i)=><button key={id} onClick={()=>go(id)} className={world===id?'selected':''}><span>0{i+1}</span>{label}<ArrowUpRight size={13}/></button>)}</nav>{menu&&<div className="menu-panel">{WORLDS.map(([id,label,desc],i)=><button onClick={()=>go(id)} key={id}><small>0{i+1}</small><span>{label}</span><ArrowUpRight/></button>)}<button className="reset-progress" onClick={reset}><RotateCcw size={15}/> FORGET EVERYTHING</button></div>}<div className="transition-veil" ref={veil} aria-hidden="true"/><div className="screen-grain" aria-hidden="true"/></div>}

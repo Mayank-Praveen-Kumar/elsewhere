@@ -172,3 +172,10 @@
 .crt-screen-content .terminal-prompt-v4{font-family:'Courier New',Courier,monospace;}
 .terminal-world>.faulty-bits-layer{opacity:.055;}
 @media(max-width:600px){.crt-screen-content .terminal-log-v4{font-size:13px;letter-spacing:0;}}
+
+/* Cursor-responsive binary columns behind the final CRT scene. */
+.binary-rain{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;opacity:.8;}
+
+.terminal-world{animation:terminalArrival .85s ease-out both;}
+@keyframes terminalArrival{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.terminal-world{animation:none}}

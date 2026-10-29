@@ -1,4 +1,4 @@
-# ELSEWHERE v0.4.3 — Animated observer head turn
+# ELSEWHERE v0.4.4 — Animated observer head turn
 
 Dither uses your two uploaded hooded coder poses. On the first reveal the figure faces the laptop. Leave the figure and return (or click Look closer) to trigger the second reveal: the hood contours animate over 1.45 seconds, then one pale eye and the other appear. The torso, arms, and laptop remain fixed; laptop light continues pulsing. The completed pose holds before blackout. The existing 60-second encounter also uses the turn.
 
@@ -34,3 +34,9 @@ You must remain weary of *him*.
 ...
 
 The saved visitor name replaces (Name); UNKNOWN appears when no name was entered. Each message is separated by a blank line. Existing interactive terminal commands remain available afterward.
+
+## v0.4.4 — Binary background and final-world handoff
+
+Vertical columns of 1s and 0s travel at independent speeds in either direction and randomly change direction. Nearby digits receive a small push in the cursor movement direction, then spring back into place. The CRT remains readable above the background. Reduced-motion preferences keep the binary field still.
+
+After Dither’s second reveal (or its timed encounter), the screen fades to black, holds briefly, then opens the terminal automatically. Navigating away cancels the pending handoff.
