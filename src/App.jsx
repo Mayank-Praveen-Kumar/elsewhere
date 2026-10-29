@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import TopographyBits from './reactbits/Topography.jsx';
 import DitherBits from './reactbits/Dither.jsx';
+import FaultyTerminalBits from './reactbits/FaultyTerminal.jsx';
 import { ArrowUpRight, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 const KEY = 'elsewhere-visitor-v1';
@@ -276,7 +277,14 @@ function Terminal({visitor}){
    transmit(answer(value));
  };
  return <div className="world-content terminal-world">
-   <CanvasBackground mode="terminal" pointer={{current:{x:0,y:0}}}/>
+   <div className="faulty-bits-layer" aria-hidden="true">
+     <FaultyTerminalBits tint="#58e58b" scale={1.2} gridMul={[2,1]} digitSize={1.25}
+       timeScale={0.25} scanlineIntensity={0.28} glitchAmount={0.55} flickerAmount={0.35}
+       noiseAmp={0.32} chromaticAberration={0.0} curvature={0.12}
+       mouseReact mouseStrength={0.22} glyphs="characters" glow={0.55}
+       persistence={0.5} scramble={0.35} mouseGlow={0.5} vignette={0.45}
+       clickEffect="glitch" brightness={0.65} />
+   </div>
    <div className={'terminal-box terminal-box-v4'+(corrupt?' terminal-corrupt':'')}>
      <div className="terminal-log-v4" ref={scrollRef} role="log" aria-label="Terminal output" aria-live="off">
        {entries.map(entry=><div className={'terminal-entry-v4 '+entry.type} key={entry.id}>{entry.text||'\u00a0'}</div>)}

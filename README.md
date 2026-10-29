@@ -1,11 +1,29 @@
-# ELSEWHERE v0.4 — Faulty Terminal
+# ELSEWHERE v0.4.1 — Official React Bits Faulty Terminal
 
-World 03 now supports interactive commands, typing transmission, occasional glitches and personalized branching based on visitor name and Dither encounter.
+Fixes the missing React Bits background in World 03. Uses the official React Bits Faulty Terminal WebGL component underneath the existing interactive transcript and input.
 
-## Update existing v0.3.2
-Replace `src/App.jsx` and `src/style.css`. No dependency changes. Keep installed React Bits components and image assets.
+## Upgrade your working v0.4 installation
+Copy these files from the ZIP into the matching paths in your existing project:
+- `src/App.jsx`
+- `src/style.css`
+- `package.json`
+- `scripts/install-faulty-terminal.mjs`
 
-## Fresh setup
-Run `npm.cmd install`, `npm.cmd run setup:topography`, `npm.cmd run setup:dither`, then `npm.cmd run dev`.
+Then run:
+```powershell
+npm.cmd run setup:faulty-terminal
+npm.cmd run dev
+```
 
-Type `help`, `who`, `where`, `him`, `name`, `exit`, or anything else. The terminal responds. No network or AI service is used; replies are authored rules.
+**Do not delete or overwrite your already installed** `src/reactbits/Topography.jsx`, `Topography.css`, `Dither.jsx`, or `Dither.css`. The ZIP does not include downloaded official React Bits components; the setup script installs Faulty Terminal.
+
+## Fresh install
+```powershell
+npm.cmd install
+npm.cmd run setup:topography
+npm.cmd run setup:dither
+npm.cmd run setup:faulty-terminal
+npm.cmd run dev
+```
+
+The interactive command responses, typewriter messages, and visitor memory are preserved. The new background is configured with muted phosphor green glyphs, mouse reaction, subtle flicker, scanlines and click glitch. Browser rendering not tested in this environment.
