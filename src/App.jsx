@@ -85,12 +85,21 @@ function Topography({ visitor, update, pointer }) {
    </div>}
  </div>;
 }
-function Observer({ turned=false, tearing=false }) {
- return <div className={'observer-photograph'+(turned?' observer-alert':'')+(tearing?' observer-tearing':'')}>
-   <img src="/images/dither-observer.webp" alt="" draggable="false" />
-   {turned&&<div className="observer-face-shift" aria-hidden="true">
-     <span className="observer-eye left"/><span className="observer-eye right"/>
-   </div>}
+function Observer({ phase }) {
+ const [frame,setFrame]=useState(0);
+ useEffect(()=>{
+   const began=performance.now();
+   const update=()=>{
+     const elapsed=performance.now()-began;
+     if(phase==='working')setFrame(Math.floor(elapsed/145)%11);
+     else if(phase==='turned'||phase==='tearing')setFrame(elapsed<1050?11+Math.min(7,Math.floor(elapsed/132)):19+Math.floor(elapsed/420)%4);
+     else if(phase==='staring')setFrame(19+Math.floor(elapsed/420)%4);
+     else setFrame(0);
+   };
+   update();const id=setInterval(update,65);return()=>clearInterval(id);
+ },[phase]);
+ return <div className="observer-sprite-scene" aria-hidden="true">
+   <div className="observer-sprite" style={{backgroundPosition:`${(frame%6)*20}% ${Math.floor(frame/6)*(100/3)}%`}} />
  </div>;
 }
 function Dither({ pointer, onEncounter }) {
@@ -184,7 +193,7 @@ function Dither({ pointer, onEncounter }) {
    </div>
    <div className={'observer-reveal-v3 '+(active?'is-active':'')+(phase==='tearing'||phase==='staring'?' is-open':'')}
      style={{'--mx':`${cursor.x}px`,'--my':`${cursor.y}px`}}>
-     <Observer turned={['turned','tearing','staring'].includes(phase)} tearing={phase==='tearing'}/>
+     <Observer phase={phase}/>
    </div>
    <div className="observer-interaction-zone" onClick={revealAgain}
      role="button" tabIndex={0} aria-label="Look closer" onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();revealAgain()}}}/>

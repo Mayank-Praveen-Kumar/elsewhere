@@ -93,3 +93,8 @@
 .observer-eye.right{right:25%;transform:rotate(5deg)}
 @keyframes observerLook{from{opacity:0;transform:translate(-50%,-50%) scale(.82)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @media (max-aspect-ratio: 1/1){.observer-photograph>img{object-position:50% 50%;}.observer-face-shift{top:42%;}}
+
+/* v0.3.2 — animated sprite replacing the full photograph and CSS figure */
+.observer-sprite-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:transparent;}
+.observer-sprite{width:min(74vw,820px);aspect-ratio:4/3;background-image:url('/images/observer-sprite.webp');background-size:600% 400%;background-repeat:no-repeat;image-rendering:auto;filter:grayscale(1) contrast(1.2) brightness(.85);box-shadow:0 0 85px 35px rgba(0,0,0,.65);}
+@media(max-width:700px){.observer-sprite{width:110vw;max-width:none;}}

@@ -1,19 +1,17 @@
-# ELSEWHERE v0.3.1 — photographic observer
+# ELSEWHERE v0.3.2 — Animated Observer Sprite
 
-The supplied photograph is included at `public/images/dither-observer.webp` and replaces the previous CSS hooded character in Dither. The original React Bits Dither shader remains unchanged. The photo appears only inside the existing cursor reveal, with a darkened hood and pale eyes overlaid during the second encounter. This overlay is a prototype, not a realistic rotation of the photographed person.
+This build replaces the static full-scene photograph with a **23-frame sprite animation** of one hooded figure and one laptop, based on the supplied visual reference. The image is a sprite atlas at `public/images/observer-sprite.webp` (6 columns × 4 rows, 384 × 288 px per frame). The animation switches between idle typing, turning, and staring states. The official React Bits Dither layer remains in place.
 
-## Update your existing working v0.3 project
-
-Copy the following into your existing project, keeping all your current React Bits files and dependencies:
-
-- `src/App.jsx`
-- `src/style.css`
-- `public/images/dither-observer.webp` (create `public/images` if needed)
-
-Refresh the page. No npm reinstall or setup script is needed.
+## Update your existing v0.3.1 installation
+Copy `src/App.jsx`, `src/style.css`, and `public/images/observer-sprite.webp` from this archive into your existing project. No reinstall needed. The old `dither-observer.webp` is no longer used.
 
 ## Fresh installation
+```
+npm.cmd install
+npm.cmd run setup:topography
+npm.cmd run setup:dither
+npm.cmd run dev
+```
 
-`npm.cmd install`, then `npm.cmd run setup:topography`, `npm.cmd run setup:dither`, and `npm.cmd run dev`.
-
-This package uses the same source-download setup for React Bits as the previous version. The installed React Bits components are not included in the archive.
+## Note
+This is an **early sprite pass**. The source sprite artwork was generated from the supplied visual reference; the frame sheet is not a pixel-perfect extraction from the original photograph. The typing motion is subtle, and the stare uses a closer framing. We can refine the silhouette, transparent background, and timing next.
