@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import TopographyBits from './reactbits/Topography.jsx';
+import DitherBits from './reactbits/Dither.jsx';
 import { ArrowUpRight, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 const KEY = 'elsewhere-visitor-v1';
@@ -85,15 +86,107 @@ function Topography({ visitor, update, pointer }) {
  </div>;
 }
 function Observer({ turned=false, tearing=false }) {return <div className={'observer-scene '+(tearing?'tearing':'')}><div className="observer-halo"/><div className="monitor"><div className={'monitor-screen '+(turned?'flicker':'')} /></div><div className="desk"/><div className={'figure '+(turned?'turned':'')}><div className="hood"><div className="face">{turned&&<div className="eyes"><i/><i/></div>}</div></div><div className="torso"/><div className="arm"/></div></div>}
-function Dither({pointer,onEncounter}){
- const [phase,setPhase]=useState('hidden'),[seen,setSeen]=useState(0),[countdown,setCountdown]=useState(60),[cursor,setCursor]=useState({x:-500,y:-500});const start=useRef(null),timeout=useRef(null),phaseRef=useRef(phase);phaseRef.current=phase;
- useEffect(()=>{if(seen!==1)return;const interval=setInterval(()=>{const remain=Math.max(0,60-Math.floor((Date.now()-start.current)/1000));setCountdown(remain);if(remain===0){setPhase('tearing');onEncounter();clearInterval(interval);timeout.current=setTimeout(()=>setPhase('blackout'),6500)}},250);return()=>clearInterval(interval)},[seen,onEncounter]);
- useEffect(()=>()=>clearTimeout(timeout.current),[]);
- const reveal=()=>{if(phaseRef.current==='tearing'||phaseRef.current==='blackout')return;if(seen===0){start.current=Date.now();setSeen(1);setPhase('working')}else if(seen===1){setSeen(2);setPhase('turned');onEncounter()}};
- const reset=()=>{clearTimeout(timeout.current);setPhase('hidden');setSeen(0);setCountdown(60);start.current=null};
- const move=e=>{pointer.current={x:e.clientX,y:e.clientY};const r=e.currentTarget.getBoundingClientRect();setCursor({x:e.clientX-r.left,y:e.clientY-r.top})};
- const active=phase==='working'||phase==='turned';return <div className="world-content" onPointerMove={move}><CanvasBackground mode="dither" pointer={pointer}/><div className="observer-region" style={{'--mx':`${cursor.x}px`,'--my':`${cursor.y}px`}}><div className={'observer-reveal '+(active?'cursor-reveal':'')+(phase==='tearing'?' full-reveal':'')}><Observer turned={phase==='turned'||phase==='tearing'||phase==='blackout'} tearing={phase==='tearing'}/></div><div className="observer-target" onPointerEnter={reveal} onClick={reveal} role="button" tabIndex={0} aria-label="Reveal the figure" onKeyDown={e=>{if(e.key==='Enter'||e.key===' ')reveal()}}/></div>{phase==='tearing'&&<div className="tear-overlay"><div className="tear-left"/><div className="tear-right"/></div>}{phase==='blackout'&&<div className="blackout"><button onClick={reset}>RETURN TO THE NOISE ↗</button></div>}</div>
+function Dither({ pointer, onEncounter }) {
+ const [phase,setPhase]=useState('hidden');
+ const [cursor,setCursor]=useState({x:-999,y:-999});
+ const [firstSeen,setFirstSeen]=useState(false);
+ const [remaining,setRemaining]=useState(60);
+ const [flash,setFlash]=useState(false);
+ const phaseRef=useRef('hidden');
+ const firstSeenRef=useRef(false);
+ const timeLeft=useRef(60000);
+ const lastTick=useRef(null);
+ const timers=useRef([]);
+ const region=useRef(null);
+ const wasInside=useRef(false);
+ const encounterRef=useRef(onEncounter);
+ encounterRef.current=onEncounter;
+ const setStage=next=>{phaseRef.current=next;setPhase(next)};
+ const schedule=(fn,ms)=>{const id=setTimeout(fn,ms);timers.current.push(id)};
+ const clearTimers=()=>{timers.current.forEach(clearTimeout);timers.current=[]};
+ const reset=()=>{
+   clearTimers();timeLeft.current=60000;lastTick.current=null;
+   firstSeenRef.current=false;wasInside.current=false;setRemaining(60);setFlash(false);setStage('hidden');
+ };
+ useEffect(()=>()=>clearTimers(),[]);
+ const conclude=()=>{
+   encounterRef.current();
+   setStage('blackout');
+   schedule(reset,1900);
+ };
+ const turn=()=>{
+   if(phaseRef.current!=='working')return;
+   setStage('turned');
+   encounterRef.current();
+   setFlash(true);
+   schedule(()=>setFlash(false),480);
+   schedule(conclude,3100);
+ };
+ const tear=()=>{
+   if(phaseRef.current!=='working')return;
+   setStage('tearing');
+   encounterRef.current();
+   schedule(()=>setStage('staring'),2600);
+   schedule(conclude,5700);
+ };
+ useEffect(()=>{
+   if(phase!=='working')return;
+   lastTick.current=performance.now();
+   const interval=setInterval(()=>{
+     if(document.hidden){lastTick.current=performance.now();return;}
+     const now=performance.now();
+     timeLeft.current=Math.max(0,timeLeft.current-(now-lastTick.current));
+     lastTick.current=now;
+     setRemaining(Math.ceil(timeLeft.current/1000));
+     if(timeLeft.current<=0)tear();
+   },100);
+   return()=>{clearInterval(interval);lastTick.current=null};
+ },[phase]);
+ const withinTarget=(x,y)=>{
+   const r=region.current?.getBoundingClientRect();
+   if(!r)return false;
+   const centerX=r.width*.5,centerY=r.height*.52;
+   return Math.hypot((x-centerX)/Math.min(185,r.width*.22),(y-centerY)/Math.min(175,r.height*.25))<1;
+ };
+ const move=e=>{
+   pointer.current={x:e.clientX,y:e.clientY};
+   const r=e.currentTarget.getBoundingClientRect();
+   const x=e.clientX-r.left,y=e.clientY-r.top;
+   setCursor({x,y});
+   const inside=withinTarget(x,y);
+   if(!inside){wasInside.current=false;return;}
+   if(wasInside.current)return;
+   wasInside.current=true;
+   if(phaseRef.current==='working'){turn();return;}
+   if(phaseRef.current==='hidden'){
+     firstSeenRef.current=true;timeLeft.current=60000;
+     setStage('working');
+   }
+ };
+ const revealAgain=()=>{
+   if(phaseRef.current==='working'&&firstSeenRef.current)turn();
+ };
+ const active=['working','turned','tearing','staring'].includes(phase);
+ return <div className="world-content dither-world" ref={region} onPointerMove={move}>
+   <div className="dither-bits" aria-hidden="true">
+     <DitherBits waveSpeed={0.045} waveFrequency={2.8} waveAmplitude={0.26}
+       waveColor={[0.65,0.7,0.77]} backgroundColor={[0.018,0.022,0.035]}
+       colorNum={4} pixelSize={3} ditherMode="bayer"
+       enableMouseInteraction mouseEffect="erase" mouseRadius={0.8} mouseStrength={0.8}
+       trail={0.35} clickRipple={false}/>
+   </div>
+   <div className={'observer-reveal-v3 '+(active?'is-active':'')+(phase==='tearing'||phase==='staring'?' is-open':'')}
+     style={{'--mx':`${cursor.x}px`,'--my':`${cursor.y}px`}}>
+     <Observer turned={['turned','tearing','staring'].includes(phase)} tearing={phase==='tearing'}/>
+   </div>
+   <div className="observer-interaction-zone" onClick={revealAgain}
+     role="button" tabIndex={0} aria-label="Look closer" onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();revealAgain()}}}/>
+   {phase==='tearing'&&<div className="curtain-opening" aria-hidden="true"><div/><div/></div>}
+   {flash&&<div className="dither-screen-flash" aria-hidden="true"/>}
+   {phase==='blackout'&&<div className="dither-blackout" aria-hidden="true"/>}
+ </div>;
 }
+
 function Terminal({visitor}){
  const lines=visitor.name?[`> CONNECTION ESTABLISHED`,`> SEARCHING FOR IDENTITY...`,`> MATCH FOUND.`,`> ${visitor.name.toUpperCase()}.`,`> THAT'S WHAT YOU TOLD THEM.`,...(visitor.sawObserver?['> YOU SAW HIM.','> DIDN’T YOU?']:['> THERE IS STILL SOMETHING YOU HAVEN’T SEEN.']),'> BUT IS THAT WHO YOU ARE?']:['> CONNECTION ESTABLISHED','> IDENTITY UNKNOWN.','> INTERESTING.','> YOU HAVE MANAGED TO REMAIN ANONYMOUS.','> FOR NOW.',...(visitor.sawObserver?['> HE SAW YOU.']:[])];
  const [visible,setVisible]=useState(0);useEffect(()=>{setVisible(0);const id=setInterval(()=>setVisible(v=>Math.min(lines.length,v+1)),1100);return()=>clearInterval(id)},[visitor.name,visitor.sawObserver]);return <div className="world-content terminal-world"><CanvasBackground mode="terminal" pointer={{current:{x:0,y:0}}}/><div className="terminal-box"><div className="terminal-lines" aria-live="polite">{lines.slice(0,visible).map((line,i)=><div key={i}>{line}</div>)}<span className="cursor-block">▌</span></div></div></div>
