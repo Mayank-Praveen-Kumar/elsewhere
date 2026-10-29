@@ -23,3 +23,36 @@
 .topography-world .world-heading, .topography-world .topography-hit-layer { z-index:2; }
 .topography-world .identity-card { z-index:5; }
 .topography-world::after { z-index:1; }
+
+/* v0.2.2 — discovery-only UI: no world titles or explanatory labels */
+.topography-world .topography-hit-layer { z-index: 2; }
+.topography-world .name-capsule {
+  position:absolute; z-index: 8; transform:translate(-50%,-50%);
+  width:min(340px,78vw); padding:17px 19px 14px;
+  border:1px solid rgba(151,112,218,.36); border-radius:22px;
+  background:rgba(12,6,27,.78); backdrop-filter:blur(15px);
+  box-shadow:0 0 35px rgba(36,7,117,.24);
+  animation:nameMaterialize .75s cubic-bezier(.2,.8,.2,1) both;
+  text-align:center;
+}
+.name-prompt,.name-reply {margin:0 0 14px;font-size:13px;line-height:1.6;color:#eee8ff;letter-spacing:.01em;}
+.name-prompt em,.name-reply em{font-family:Georgia,serif;color:#c4b0ef;}
+.name-form{display:flex;align-items:center;gap:8px;}
+.name-form input{
+  flex:1;min-width:0;border:1px solid rgba(151,112,218,.35);border-radius:999px;
+  padding:11px 13px;background:rgba(4,2,12,.65);color:#f7f2ff;font-size:12px;
+}
+.name-form input::placeholder{color:#a49bb7;}
+.capsule-button{
+  border:1px solid rgba(151,112,218,.5);border-radius:999px;
+  padding:11px 14px;background:rgba(36,7,117,.7);color:#f5edff;
+  white-space:nowrap;font:10px 'DM Mono',monospace;letter-spacing:.06em;
+  transition:background .2s,transform .2s;
+}
+.capsule-button:hover{background:#3d168e;transform:translateY(-1px);}
+.name-dismiss{display:block;margin:10px auto 0;border:0;background:none;color:#a49bb7;font:9px 'DM Mono',monospace;letter-spacing:.08em;}
+@keyframes nameMaterialize{
+  from{opacity:0;filter:blur(12px);transform:translate(-50%,-43%) scale(.92)}
+  to{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1)}
+}
+@media(max-width:650px){.topography-world .name-capsule{top:72%!important;}.name-form{flex-wrap:wrap;}.name-form input{flex-basis:100%;}.name-form .capsule-button{margin:auto;}}

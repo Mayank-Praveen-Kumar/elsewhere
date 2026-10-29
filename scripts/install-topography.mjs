@@ -13,7 +13,11 @@ for(const file of data.files){
   if(!['Topography.jsx','Topography.js','Topography.css'].includes(basename))continue;
   if(typeof file.content!=='string')throw new Error(`Missing source for ${basename}`);
   const target=basename==='Topography.js'?'Topography.jsx':basename;
-  await writeFile(path.join(dir,target),file.content,'utf8');
+  let content=file.content;
+  if(target==='Topography.jsx' && !/import\s+React\s*[,}]|import\s+\*\s+as\s+React/.test(content)){
+    content="import React from 'react';\n"+content;
+  }
+  await writeFile(path.join(dir,target),content,'utf8');
   console.log(`Installed official React Bits ${target}`);
 }
 const deps=Object.keys(data.dependencies||{});
