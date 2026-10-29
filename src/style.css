@@ -15,3 +15,11 @@
 @media(max-width:650px){.topography-world .secret{max-width:42vw;font-size:12px}.topography-world .identity-card{padding:24px}}
 .topography-bits{pointer-events:auto;}
 .topography-bits canvas{pointer-events:auto;}
+
+/* v0.2.1 visibility fix: the canvas must sit ABOVE the opaque world background. */
+.topography-world { isolation:isolate; }
+.topography-bits { z-index:0 !important; pointer-events:none !important; }
+.topography-bits canvas { display:block; pointer-events:auto; }
+.topography-world .world-heading, .topography-world .topography-hit-layer { z-index:2; }
+.topography-world .identity-card { z-index:5; }
+.topography-world::after { z-index:1; }
